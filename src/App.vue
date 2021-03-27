@@ -1,60 +1,84 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
+    <v-system-bar color="accent" app></v-system-bar>
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
+    <v-app-bar color="background" app fixed elevate-on-scroll>
+      <v-app-bar-nav-icon
+        @click.stop="drawer = !drawer"
+        class="hidden-sm-and-up"
+      ></v-app-bar-nav-icon>
+      <v-toolbar-title>
+        <v-icon left>$main</v-icon>
+        {{ this.$webSiteName }}
+      </v-toolbar-title>
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <v-toolbar-items class="hidden-xs-only">
+        <v-btn v-for="item in group" :key="item.title"
+          :href="item.path" text>
+          <v-icon left>${{ item.icon }}</v-icon>
+          {{ item.title }}
+        </v-btn>
+      </v-toolbar-items>
     </v-app-bar>
 
-    <v-main>
-      <HelloWorld/>
+    <v-navigation-drawer v-model="drawer" left temporary absolute class="background">
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title class="title primary--text">
+            {{ this.$webSiteName }}
+          </v-list-item-title>
+          <v-list-item-subtitle>
+            Your<strong class="accent"> best friend </strong>to find recipes!
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item href="">
+        Favorites
+      </v-list-item>
+      <v-divider></v-divider>
+      <v-list nav dense>
+        <v-list-item-group v-model="group">
+          <v-list-item v-for="item in group" :key="item.title" :href="item.path">
+            <v-list-item-icon><v-icon>${{ item.icon }}</v-icon></v-list-item-icon>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-main class="background">
+      <router-view></router-view>
     </v-main>
+      <Footer/>
+
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
-
+import Footer from '@/components/Footer.vue';
 export default {
-  name: 'App',
+  name: "App",
 
-  components: {
-    HelloWorld,
-  },
+  components: {Footer},
 
   data: () => ({
-    //
+    drawer: false,
+    favorite: {
+      title: "Favorites", path: "/favorites", icon: "heart"
+    },
+    group: [
+      { title: "Home", path: "/", icon: "home" },
+      { title: "Explore", path: "/explore", icon: "explore" },
+      { title: "Suprise me", path: "/suprise", icon: "suprise" },
+    ],
   }),
+
+  watch: {
+    group() {
+      this.drawer = false;
+    },
+  },
 };
 </script>
