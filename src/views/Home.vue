@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <v-container class="d-flex align-center text-center banner light" fluid>
+      <!-- Main banner -->
       <v-row justify="center">
         <img
           src="@/assets/icons/burger.png"
@@ -31,6 +32,7 @@
         </div>
       </v-row>
     </v-container>
+    <!-- Filters bar -->
     <v-container>
       <v-divider class="mb-8 mt-5"></v-divider>
     </v-container>
@@ -92,8 +94,8 @@
     <v-container>
       <v-divider class="mb-5 mt-4"></v-divider>
     </v-container>
-
-    <RecipesList :recipes="recipes" />
+    <!-- RecipesList -->
+    <RecipesList :recipes="recipes"/>
   </div>
 </template>
 
@@ -105,6 +107,7 @@
 
 <script>
 import RecipesList from "@/components/RecipesList.vue";
+import * as SpoonacularRecipes from "@/controllers/SpoonacularRecipes.js";
 export default {
   name: "Home",
   data: () => ({
@@ -112,7 +115,6 @@ export default {
     loading: false,
     items: [],
     searchAuto: null,
-
     intolerences: [],
     mealTypes: "",
     diets: "",
@@ -122,11 +124,11 @@ export default {
     RecipesList,
   },
   mounted() {
-    this.getRandom();
+    this.getRandomRecipes();
   },
   watch: {
     searchAuto(val) {
-      val && val !== this.select && this.querySelections(val);
+      val && val !== this.select && this.getAutocomplete(val);
     },
     intolerences() {
       this.search();
@@ -139,91 +141,38 @@ export default {
     },
   },
   methods: {
-    querySelections(v) {
+    getAutocomplete(v) {
       this.loading = true;
-      setTimeout(() => {
-        let url =
-          "https://api.spoonacular.com/recipes/autocomplete?number=5&apiKey=" +
-          "454f05438c534518998e1e8b638110f9";
-        url += "&query=" + encodeURI(v);
-        fetch(url)
-          .then((res) => {
-            res
-              .json()
-              .then((res) => {
-                this.items = res
-                  .map((v) => v.title)
-                  .filter((e) => {
-                    return (
-                      (e || "").toLowerCase().indexOf((v || "").toLowerCase()) >
-                      -1
-                    );
-                  });
-                  this.loading = false;
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }, 1000);
+      SpoonacularRecipes.getAutocompleteRecipes(5, v)
+        .then((res) => {
+          this.items = res;
+        })
+        .catch(() => {
+          this.items = [];
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
     search() {
-      let url =
-        "https://api.spoonacular.com/recipes/complexSearch?apiKey=" +
-        "454f05438c534518998e1e8b638110f9" +
-        "&number=8&addRecipeInformation=true";
-      url +=
-        this.select != ""
-          ? "&titleMatch=" + encodeURI(this.select)
-          : "";
-      url +=
-        this.intolerences.length != 0
-          ? "&intolerances=" + encodeURI(this.intolerences.join(","))
-          : "";
-      url += this.mealTypes != "" ? "&type=" + encodeURI(this.mealTypes) : "";
-      url += this.diets != "" ? "&diet=" + encodeURI(this.diets) : "";
-      fetch(url)
+      SpoonacularRecipes.getFilteredRecipes(8, this.select, this.intolerences, this.mealTypes, this.diets)
         .then((res) => {
-          res
-            .json()
-            .then((res) => {
-              this.recipes.splice(0);
-              res.results.forEach((recipe) => {
-                this.recipes.push(recipe);
-              });
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+          this.recipes = res;
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch(() => {
+          this.recipes = [];
+        })
+        .finally();
     },
-    getRandom() {
-      fetch(
-        "https://api.spoonacular.com/recipes/random?apiKey=" +
-          "454f05438c534518998e1e8b638110f9" +
-          "&number=8&addRecipeInformation=true"
-      )
+    getRandomRecipes() {
+      SpoonacularRecipes.getRandomRecipes(8)
         .then((res) => {
-          res
-            .json()
-            .then((res) => {
-              res.recipes.forEach((recipe) => {
-                this.recipes.push(recipe);
-              });
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+          this.recipes = res;
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch(() => {
+          this.recipes = [];
+        })
+        .finally();
     },
   },
 };

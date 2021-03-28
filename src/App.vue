@@ -1,16 +1,17 @@
 <template>
   <v-app>
     <v-system-bar color="accent" app></v-system-bar>
-
     <v-app-bar color="background" app fixed elevate-on-scroll>
-      <v-app-bar-nav-icon
-        @click.stop="drawer = !drawer"
-        class="hidden-sm-and-up"
-      ></v-app-bar-nav-icon>
-      <v-toolbar-title>
-        <v-icon left>$main</v-icon>
-        {{ this.$webSiteName }}
-      </v-toolbar-title>
+        <v-app-bar-nav-icon
+          @click.stop="drawer = !drawer"
+          class="hidden-sm-and-up"
+        ></v-app-bar-nav-icon>
+      <a href="/" class="text-decoration-none primary--text">
+        <v-toolbar-title>
+          <v-icon left>$main</v-icon>
+          {{ this.$webSiteName }}
+        </v-toolbar-title>
+      </a>
 
       <v-spacer></v-spacer>
 
@@ -34,9 +35,6 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item href="">
-        Favorites
-      </v-list-item>
       <v-divider></v-divider>
       <v-list nav dense>
         <v-list-item-group v-model="group">
@@ -47,12 +45,10 @@
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
-
     <v-main class="background">
       <router-view></router-view>
     </v-main>
-      <Footer/>
-
+    <Footer/>
   </v-app>
 </template>
 
@@ -65,11 +61,11 @@ export default {
 
   data: () => ({
     drawer: false,
-    favorite: {
-      title: "Favorites", path: "/favorites", icon: "heart"
+    favorites: {
+      
     },
     group: [
-      { title: "Home", path: "/", icon: "home" },
+      { title: "Favorites", path: "/favorites", icon: "favorite" },
       { title: "Explore", path: "/explore", icon: "explore" },
       { title: "Suprise me", path: "/suprise", icon: "suprise" },
     ],

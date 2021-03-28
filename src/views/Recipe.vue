@@ -60,7 +60,7 @@
 
 <script>
 import IngredientsList from "@/components/IngredientsList";
-
+import * as SpoonacularRecipes from "@/controllers/SpoonacularRecipes.js";
 export default {
   name: "Recipe",
   components: {
@@ -78,25 +78,17 @@ export default {
     ],
   }),
   mounted() {
-    this.fetchRecipe();
+    this.getRecipe();
   },
   methods: {
-    fetchRecipe() {
-      fetch('https://api.spoonacular.com/recipes/'+ this.$route.params.id +'/information?instructionsRequired=true&includeNutrition=false&apiKey='+'454f05438c534518998e1e8b638110f9')
-        .then(res => {
-          res.json()
-            .then(res => {
-              console.log(res);
-              this.recipe = res;
-              document.querySelector('#description').innerHTML = this.recipe.instructions;
-            })
-            .catch(error => {
-              console.log(error);
-            });
+    getRecipe() {
+      SpoonacularRecipes.getRecipe(this.$route.params.id)
+        .then((res) => {
+          this.recipe = res;
+          document.querySelector('#description').innerHTML = this.recipe.instructions;
         })
-        .catch(error => {
-          console.log(error);
-        });
+        .catch()
+        .finally();
     }
   }
 };

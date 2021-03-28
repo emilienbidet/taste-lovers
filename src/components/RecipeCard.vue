@@ -38,11 +38,13 @@
 
     <v-card-actions class="justify-center">
       <v-btn color="accent" text @click="details"> Details </v-btn>
+      <v-btn color="accent" icon @click="favorite"><v-icon>$favorite</v-icon></v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
+import { addToFavorites } from '@/controllers/FavoritesRecipes';
 export default {
   name: "RecipeCard",
   props: ['recipe'],
@@ -51,8 +53,10 @@ export default {
 
   methods: {
     details() {
-      window.localStorage.setItem('recipe', JSON.stringify(this.recipe));
       this.$router.push({ name: 'recipe', params: { id: this.recipe.id } })
+    },
+    favorite() {
+      addToFavorites(this.recipe);
     }
   },
 };

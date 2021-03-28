@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify/lib/framework';
 
 import MainIcon from '@/components/icons/MainIcon.vue';
+import FavoriteIcon from '@/components/icons/FavoriteIcon.vue'
 import SupriseIcon from '@/components/icons/SupriseIcon.vue';
 import ExploreIcon from '@/components/icons/ExploreIcon.vue';
 import HomeIcon from '@/components/icons/HomeIcon.vue';
@@ -31,6 +32,9 @@ export default new Vuetify({
             },
             home: {
                 component: HomeIcon,
+            },
+            favorite: {
+                component: FavoriteIcon,
             },
             suprise: {
                 component: SupriseIcon,
